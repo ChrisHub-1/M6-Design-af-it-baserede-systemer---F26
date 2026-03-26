@@ -1,0 +1,8 @@
+{
+  "siteName": "index",
+  "theme": "dark",
+  "version": 1,
+  "users": [
+    { "name": "Christian", "role": "admin" }
+  ]
+}

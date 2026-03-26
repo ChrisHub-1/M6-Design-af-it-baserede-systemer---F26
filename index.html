@@ -1,0 +1,55 @@
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #111111;
+            padding: 24px;
+        }
+
+        body.dark {
+            background-color: #121212;
+            color: #f5f5f5;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1><b>Velkommen til streaming film oversigt</b></h1>
+    <p id="site-name"></p>
+    <img src="https://www.flatpanels.dk/billeder/filmtjenesterhero-2.jpg" alt="404. Image not found">
+
+    <script>
+        function applyTheme(theme) {
+            document.body.classList.toggle("dark", theme === "dark");
+        }
+
+        fetch("data.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                applyTheme(data.theme);
+                document.getElementById("site-name").textContent = `Site: ${data.siteName}`;
+            })
+            .catch(error => {
+                // If fetch is blocked (common with file://), keep page usable with a dark fallback.
+                applyTheme("dark");
+                document.getElementById("site-name").textContent = "Site: fallback (could not read data.json)";
+                console.error("Failed to load JSON:", error);
+            });
+    </script>
+</body>
+</html>
+
+
