@@ -31,9 +31,9 @@ body {
    Header & Navigation
 --------------------------------*/
 header {
-  background: #fff;
+  background: #8d1414;
   padding: 20px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #240707;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -105,7 +105,7 @@ nav ul li a:hover {
 }
 
 .card {
-  background: white;
+  background: rgb(69, 100, 158);
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
