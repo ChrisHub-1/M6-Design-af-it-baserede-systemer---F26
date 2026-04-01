@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min Side</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #104978;
+        }
+        .search-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .search-filters select, .search-filters input {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+        .search-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-main input {
+            padding: 10px;
+            width: 300px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+        }
+        .search-main button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .search-main button:hover {
+            background: #0056b3;
+        }
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        .sidebar {
+            width: 200px;
+            background: #1a4a6e;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        .sidebar h3 {
+            margin-bottom: 10px;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        .containers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .container-item {
+            background: #1a4a6e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .container-item h2 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .container-item p {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <nav class="container">
+            <div class="logo">FindDinFilm.dk</div>
+            <ul>
+                <li><a href="index.html">Forside</a></li>
+                <li><a href="#">Min Side</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <div class="search-filters">
+            <select name="genre">
+                <option value="">Vælg genre</option>
+                <option>Action</option>
+                <option>Adventure</option>
+                <option>Comedy</option>
+                <option>Drama</option>
+                <option>Horror</option>
+                <option>Sci-Fi</option>
+                <option>Thriller</option>
+                <option>Romance</option>
+                <option>Animation</option>
+                <option>Documentary</option>
+            </select>
+            <input type="text" placeholder="Skuespiller...">
+            <select name="streaming">
+                <option value="">Vælg streamingtjeneste</option>
+                <option>HBO</option>
+                <option>Netflix</option>
+                <option>Prime</option>
+                <option>Viaplay</option>
+            </select>
+        </div>
+        <div class="search-main">
+            <input type="text" placeholder="Søg efter film...">
+            <button type="submit">Søg</button>
+        </div>
+    </div>
+    
+    <div class="layout">
+        <aside class="sidebar left">
+            <h3>Reklame</h3>
+            <p>Ad space 1</p>
+        </aside>
+        
+        <main>
+            <div class="containers">
+                <div class="container-item">
+                    <h2>Fear and Loathing in Las Vegas</h2>
+                    <p>Gutterne sætter kurs mod Las Vegas</p>
+                </div>
+                <div class="container-item">
+                    <h2>Mortal Kombat</h2>
+                    <p>IYKYK</p>
+                </div>
+                <div class="container-item">
+                    <h2>The Matrix</h2>
+                    <p>Neo skal tage et valg...</p>
+                </div>
+                <div class="container-item">
+                    <h2>The Room</h2>
+                    <p>Bedste film nogensinde</p>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="sidebar right">
+            <h3>Reklame</h3>
+            <p>Ad space 2</p>
+        </aside>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <a href="index.html">&copy; 2025 FindDinFilm.dk</a>
+    </footer>
+</body>
+</html>
