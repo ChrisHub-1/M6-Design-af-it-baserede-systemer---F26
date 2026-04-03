@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min Side</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .gemtfilm, .setfilm {
+            width: 150px;
+            height: 225px;
+            color: black;
+            border: 4px solid darkslategrey;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            float: left;
+            border-radius: 10px;
+        }
+
+        .gemtfilm {
+            background-color: pink;
+        }
+
+        .setfilm {
+            background-color: rgb(139, 255, 224);
+        }
+
+        .film-row {
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        label, b {
+            color: #bcbcbc;
+        }
+
+        .preferences-section input[type="radio"],
+        .preferences-section input[type="checkbox"] {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <nav class="container">
+            <div class="logo">FindDinFilm.dk</div>
+            <ul>
+                <li><a href="index.html">Forside</a></li>
+                <li><a href="#">Min Side</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero / Page Title -->
+    <div class="hero">
+        <h1>Min Side</h1>
+        <p>Administrer dine streamingtjenester, oplysninger og gemte film</p>
+    </div>
+
+    <!-- Page Body: Sidebar + Main Content -->
+    <div class="page-body">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>Personlig Konto</h3>
+            <a href="#">Min Konto</a>
+            <a href="#">Mine Film</a>
+            <a href="#">Cookie-Præferencer</a>
+            <a href="#">Notifikationer</a>
+            <a href="index.html">Forside</a>
+
+            <h3>Om Siden</h3>
+            <p>FindDinFilm hjælper dig med at finde film på tværs af dine streamingtjenester.</p>
+            <p>Opdateret dagligt med nye titler.</p>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Streaming Services -->
+            <h3 style="margin-top: 40px; border-bottom: 2px solid #fff; padding-bottom: 8px;">Mine Streamingtjenester</h3>
+            <div class="preferences-section" style="margin: 20px 0; display: flex; gap: 40px;">
+
+                <!-- Column 1 -->
+                <div>
+                    <input type="checkbox" id="stream1" name="stream1" value="netflix">
+                    <label for="stream1"> Netflix</label><br>
+
+                    <input type="checkbox" id="stream2" name="stream2" value="amazon">
+                    <label for="stream2"> Amazon Prime</label><br>
+
+                    <input type="checkbox" id="stream3" name="stream3" value="viaplay">
+                    <label for="stream3"> Viaplay</label><br>
+
+                    <input type="checkbox" id="stream4" name="stream4" value="hbomax">
+                    <label for="stream4"> HBO Max</label><br>
+
+                    <input type="checkbox" id="stream5" name="stream5" value="disneyplus">
+                    <label for="stream5"> Disney Plus</label><br>
+                    
+                    <br>
+                    <button class="button"> Gem Streamingtjenester </button> 
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <input type="checkbox" id="stream6" name="stream6" value="tv2play">
+                    <label for="stream6"> TV2 Play</label><br>
+
+                    <input type="checkbox" id="stream7" name="stream7" value="drtv">
+                    <label for="stream7"> DR TV</label><br>
+
+                    <input type="checkbox" id="stream8" name="stream8" value="paramountplus">
+                    <label for="stream8"> Paramount Plus</label><br>
+
+                    <input type="checkbox" id="stream9" name="stream9" value="filmstriben">
+                    <label for="stream9"> Filmstriben</label><br>
+
+                    <input type="checkbox" id="stream10" name="stream10" value="yousee">
+                    <label for="stream10"> YouSee</label><br>
+                </div>
+            
+               
+
+            </div>
+
+            <!-- Preferences -->
+            <h3 style="border-bottom: 2px solid #fff; padding-bottom: 8px;">Mine Præferencer</h3>
+            <div class="preferences-section" style="margin: 20px 0;">
+                <h4>Lejemuligheder</h4>
+                <input type="checkbox" id="norent" name="norent" value="norent">
+                <label for="norent"> Søg ikke efter leje-muligheder</label><br>
+                <br>
+
+                <h4>Udseende</h4>
+                <input type="radio" id="light" name="mode" value="LIGHT">
+                <label for="light"> Light Mode</label>
+                <input type="radio" id="dark" name="mode" value="DARK">
+                <label for="dark"> Dark Mode</label>
+            <br>
+            <br>
+            <button class="button"> Gem Præferencer </button>
+            </div>
+
+            <!-- Saved Movies -->
+            <h3 style="border-bottom: 2px solid #fff; padding-bottom: 8px;">Gemte Film</h3>
+            <p style="margin-bottom: 15px;">Få besked når disse bliver tilgængelige</p>
+            <div class="film-row">
+                <div class="gemtfilm">Fear and Loathing in Las Vegas</div>
+                <div class="gemtfilm">Cannonball Run 2</div>
+                <div class="gemtfilm">Oliver og Company</div>
+                <div class="gemtfilm">Madam Web</div>
+            </div>
+
+            <!-- Favourite Movies -->
+            <h3 style="border-bottom: 2px solid #fff; padding-bottom: 8px;">Mine Favoritfilm</h3>
+            <p style="margin-bottom: 15px;">Få anbefalet film på baggrund af disse</p>
+            <div class="film-row">
+                <div class="setfilm">Barbie in the Nutcracker</div>
+                <div class="setfilm">Barbie Fairytopia: Mermaidia</div>
+                <div class="setfilm">Barbie: Thumbelina</div>
+                <div class="setfilm">Texas Chainsaw Massacre</div>
+            </div>
+
+        </div>
+        <!-- End Main Content -->
+
+    </div>
+    <!-- End Page Body -->
+
+    <!-- Footer -->
+    <footer>
+        <a href="index.html">&copy; 2025 FindDinFilm.dk</a>
+    </footer>
+
+</body>
+</html>
