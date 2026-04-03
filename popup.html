@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FindDinFilm</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #0b3252;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            background: #104978;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #efeded;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #240707;
+            border-radius: 4px;
+            background: #0b3252;
+            color: #efeded;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background: #0077ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background: #00aaff;
+        }
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Log ind</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Adgangskode" required>
+            <button type="submit">Log ind</button>
+        </form>
+        <div id="error-message" class="error-message"></div>
+    </div>
+
+    <!-- Firebase SDK (JavaScript klar til integration med lidt tilpasning...) -->
+    <script type="module">
+        // Check if this is already a popup window
+        if (window.opener === null || window.opener === window) {
+            // Not a popup, open as popup centered on screen
+            const width = 400;
+            const height = 350;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const popup = window.open(window.location.href, 'loginPopup', `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no`);
+            window.close(); // Close the current tab
+        }
+
+        // Import Firebase modules (uncomment when Firebase is set up)
+        // import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        // import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
+        // Firebase configuration (replace with actual config)
+        // const firebaseConfig = {
+        //     apiKey: "your-api-key",
+        //     authDomain: "your-project.firebaseapp.com",
+        //     projectId: "your-project-id",
+        //     // ... other config
+        // };
+
+        // Initialize Firebase
+        // const app = initializeApp(firebaseConfig);
+        // const auth = getAuth(app);
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                // Placeholder for Firebase login
+                // const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // console.log('Login successful:', userCredential.user);
+
+                // For now, just log to console
+                console.log('Login attempt:', { email, password });
+
+                // Simulate success (remove when Firebase is integrated)
+                alert('Login successful! (Placeholder)');
+                window.close(); // Close popup on success
+
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.textContent = 'Login fejlede. Tjek email og adgangskode.';
+            }
+        });
+    </script>
+</body>
+</html>
