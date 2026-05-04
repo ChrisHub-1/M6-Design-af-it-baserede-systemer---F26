@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - FindDinFilm</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .signup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 200px);
+            padding: 40px 20px;
+        }
+
+        .signup-box {
+            background: #1a4a6e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            border: 2px solid #0077ff;
+        }
+
+        .signup-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #efeded;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bcbcbc;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #0077ff;
+            border-radius: 6px;
+            background: #0b3252;
+            color: #efeded;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 5px rgba(0, 170, 255, 0.5);
+        }
+
+        .form-group input::placeholder {
+            color: #5a7a8c;
+        }
+
+        .password-requirements {
+            color: #bcbcbc;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .requirement .check {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 3px;
+            background: #5a7a8c;
+            text-align: center;
+            line-height: 15px;
+            color: #0b3252;
+            font-size: 0.8rem;
+        }
+
+        .requirement.valid .check {
+            background: #28a745;
+            color: white;
+        }
+
+        .signup-button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+
+        .signup-button:hover {
+            background: #0056b3;
+        }
+
+        .signup-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #bcbcbc;
+        }
+
+        .login-link a {
+            color: #0077ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .login-link a:hover {
+            color: #00aaff;
+        }
+
+        @media (max-width: 600px) {
+            .signup-box {
+                padding: 30px 20px;
+            }
+
+            .signup-box h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="frontpage.html" class="logo">FindDinFilm.dk</a>
+            <ul>
+                <li><a href="#" id="minSide">Min Side</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="signup-container">
+        <div class="signup-box">
+            <h2>Create Account</h2>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Choose a username"
+                        required
+                        minlength="3"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter a strong password"
+                        required
+                        minlength="8"
+                    >
+                    <div class="password-requirements">
+                        <div class="requirement" id="req-length">
+                            <span class="check">✓</span> At least 8 characters
+                        </div>
+                        <div class="requirement" id="req-uppercase">
+                            <span class="check">✓</span> At least one uppercase letter
+                        </div>
+                        <div class="requirement" id="req-number">
+                            <span class="check">✓</span> At least one number
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirm your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="signup-button" id="signupBtn">Create Account</button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
+    </footer>
+
+    <script>
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
+        }
+
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+        initializeTheme(); // Also call immediately in case DOM is already loaded
+
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const signupForm = document.getElementById('signupForm');
+        const usernameInput = document.getElementById('username');
+
+        // Password validation in real-time
+        passwordInput.addEventListener('input', function() {
+            validatePasswordRequirements();
+        });
+
+        function validatePasswordRequirements() {
+            const password = passwordInput.value;
+            
+            // Check length
+            const lengthReq = document.getElementById('req-length');
+            if (password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+
+            // Check uppercase
+            const uppercaseReq = document.getElementById('req-uppercase');
+            if (/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+
+            // Check number
+            const numberReq = document.getElementById('req-number');
+            if (/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+        }
+
+        // Form submission
+        signupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Clear messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Security: Validate input to prevent injection attacks
+            if (!isValidInput(username) || !isValidInput(email)) {
+                showError('Invalid input detected. Please check your input.');
+                return;
+            }
+
+            // Validate username length
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters long');
+                return;
+            }
+
+            // Validate email format
+            if (!isValidEmail(email)) {
+                showError('Please enter a valid email address');
+                return;
+            }
+
+            // Validate password requirements
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
+            }
+
+            if (!/[A-Z]/.test(password)) {
+                showError('Password must contain at least one uppercase letter');
+                return;
+            }
+
+            if (!/[0-9]/.test(password)) {
+                showError('Password must contain at least one number');
+                return;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            // If all validation passes
+            showSuccess('Account created successfully! Redirecting to login...');
+            
+            // Simulate account creation and redirect
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        });
+
+        // Security: Check for common SQL injection patterns and special characters
+        function isValidInput(input) {
+            const sqlInjectionPatterns = [
+                /(\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|SCRIPT|OR|AND)\b)/i,
+                /(-{2}|\/\*|\*\/)/,  // SQL comments
+                /(<|>|{|}|\[|\])/  // Script tags and brackets
+            ];
+
+            for (let pattern of sqlInjectionPatterns) {
+                if (pattern.test(input)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function isValidEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+    </script>
+
+    <script>
+        // Initialize navigation based on login status
+        function initializeNavigation() {
+            const minSideLink = document.getElementById('minSide');
+            const loginLink = document.getElementById('loginLink');
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+
+            if (isLoggedIn) {
+                // User is logged in
+                minSideLink.href = 'profilepage.html';
+                minSideLink.textContent = 'Min Side';
+                
+                // Change login link to profile icon
+                loginLink.textContent = '👤'; // Profile icon
+                loginLink.classList.add('profile-icon');
+                loginLink.href = '#';
+                loginLink.addEventListener('click', handleProfileClick);
+            } else {
+                // User is not logged in
+                minSideLink.href = 'login.html';
+                minSideLink.textContent = 'Min Side';
+                loginLink.href = 'login.html';
+                loginLink.textContent = 'Login';
+            }
+        }
+
+        function handleProfileClick(e) {
+            e.preventDefault();
+            window.location.href = 'usersettings.html';
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initializeNavigation);
+    </script>
+</body>
+</html>

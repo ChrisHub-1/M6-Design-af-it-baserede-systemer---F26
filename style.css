@@ -9,13 +9,33 @@
 
 html {
   scroll-behavior: smooth;
+  --bg-color: #0b3252;
+  --text-color: #efeded;
+  --header-bg: #104978;
+  --sidebar-bg: #07263c;
+  --search-bg: #104978;
+  --card-bg: #1a4a6e;
+  --border-color: #0077ff;
+  --accent-color: #00aaff;
+}
+
+html.light-mode {
+  --bg-color: #f5ede7;
+  --text-color: #1a1a1a;
+  --header-bg: #fffbf5;
+  --sidebar-bg: #faf5f0;
+  --search-bg: #faf5f0;
+  --card-bg: #fff9f5;
+  --border-color: #d4a574;
+  --accent-color: #c4956a;
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.6;
-  color: #efeded;
-  background: #0b3252;
+  color: var(--text-color);
+  background: var(--bg-color);
+  transition: background 0.3s, color 0.3s;
 }
 
 /* ------------------------------
@@ -31,23 +51,23 @@ body {
    Header & Navigation
 --------------------------------*/
 header {
-  background: #104978;
+  background: var(--header-bg);
   padding: 20px 0;
-  border-bottom: 1px solid #240707;
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
-
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
 
 footer a {
   text-decoration: none;
-  color: #ccc
+  color: var(--text-color);
+  opacity: 0.7;
 }
 
 footer a:hover {
-  color: #fff;
+  opacity: 1;
 }
 
 
@@ -60,6 +80,13 @@ nav {
 nav .logo {
   font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: color 0.3s;
+}
+
+nav .logo:hover {
+  color: var(--accent-color);
 }
 
 nav ul {
@@ -70,12 +97,25 @@ nav ul {
 
 nav ul li a {
   text-decoration: none;
-  color: #dfdfdf;
+  color: var(--text-color);
   font-weight: 500;
+  transition: color 0.3s;
 }
 
 nav ul li a:hover {
-  color: #ffffff;
+  color: var(--accent-color);
+}
+
+/* Profile Icon Style */
+#loginLink.profile-icon {
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: #0077ff;
+  transition: color 0.3s;
+}
+
+#loginLink.profile-icon:hover {
+  color: #00aaff;
 }
 
 /* Mobile Navigation */
@@ -89,11 +129,11 @@ nav ul li a:hover {
    Hero Section
 --------------------------------*/
 .hero {
-  background: linear-gradient(to right, #0077ff, #00aaff);
-  color: rgb(255, 255, 255);
+  background: linear-gradient(to right, var(--accent-color), var(--border-color));
+  color: var(--text-color);
   padding: 100px 20px;
   text-align: center;
-  text-shadow: 4px 4px 3px #383838;
+  text-shadow: 4px 4px 3px rgba(0,0,0,0.3);
 }
 
 .hero h1 {
@@ -148,16 +188,18 @@ h1.intro-text {
 
 .sidebar {
     width: 25%;
-    background: #07263c;
+    background: var(--sidebar-bg);
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-shadow: 6px 0 10px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s;
 }
 
 .sidebar h3 {
-    color: #ffffff;
-    border-bottom: 2px solid #fff;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 6px;
     margin-top: 20px;
 }
@@ -168,16 +210,18 @@ h1.intro-text {
 
 .sidebar a {
     text-decoration: none;
-    color: #a8d4f5;
+    color: var(--accent-color);
+    transition: color 0.3s;
 }
 
 .sidebar a:hover {
-    color: #ffffff;
+    color: var(--text-color);
 }
 
 .sidebar p {
-    color: #bcbcbc;
+    color: var(--text-color);
     font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 .main-content {
@@ -266,10 +310,29 @@ footer {
   gap: 15px;
   padding: 20px;
   align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .button-container a {
   display: inline-block;
+}
+
+.button-container a.disabled {
+  pointer-events: none;
+}
+
+.button-container a.disabled .button {
+  background-color: #999 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+.button-container a.disabled .button:hover {
+  background-color: #999 !important;
+  color: #a5a5a5 !important;
 }
 
 
@@ -309,7 +372,8 @@ footer {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background: #104978;
+    background: var(--search-bg);
+    transition: background 0.3s;
 }
 
 .search-filters {
@@ -411,4 +475,31 @@ footer {
     .featured-films {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* Ad Placeholder Styles */
+.ad-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(0, 119, 255, 0.1), rgba(0, 170, 255, 0.1));
+    border: 2px dashed #0077ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5a7a8c;
+    font-size: 0.9rem;
+}
+
+.ad-placeholder-large {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, rgba(0, 119, 255, 0.1), rgba(0, 170, 255, 0.1));
+    border: 2px dashed #0077ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5a7a8c;
+    font-size: 0.9rem;
 }
