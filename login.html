@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FindDinFilm</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 200px);
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            background: #1a4a6e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #0077ff;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #efeded;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bcbcbc;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #0077ff;
+            border-radius: 6px;
+            background: #0b3252;
+            color: #efeded;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 5px rgba(0, 170, 255, 0.5);
+        }
+
+        .form-group input::placeholder {
+            color: #5a7a8c;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #bcbcbc;
+        }
+
+        .signup-link a {
+            color: #0077ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #00aaff;
+        }
+
+        @media (max-width: 600px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+
+            .login-box h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="frontpage.html" class="logo">FindDinFilm.dk</a>
+            <ul>
+                <li><a href="#" id="minSide">Min Side</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <div class="error-message" id="errorMessage"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button type="submit" class="login-button">Login</button>
+            </form>
+
+            <div class="signup-link">
+                Don't have an account yet? <a href="createuser.html">Create one</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
+    </footer>
+
+    <script>
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
+        }
+
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+        initializeTheme(); // Also call immediately in case DOM is already loaded
+
+        // Simple hardcoded login for testing
+        const VALID_USERNAME = 'admin';
+        const VALID_PASSWORD = 'password123';
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Basic input validation - prevent SQL injection patterns
+            if (isValidInput(username) && isValidInput(password)) {
+                if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                    // Login successful
+                    sessionStorage.setItem('loggedIn', 'true');
+                    sessionStorage.setItem('username', username);
+                    window.location.href = 'frontpage.html';
+                } else {
+                    showError('Invalid username or password');
+                }
+            } else {
+                showError('Invalid input detected. Please check your input.');
+            }
+
+            // Clear password field for security
+            document.getElementById('password').value = '';
+        });
+
+        // Security: Check for common SQL injection patterns and special characters
+        function isValidInput(input) {
+            // Prevent common SQL injection keywords and patterns
+            const sqlInjectionPatterns = [
+                /(\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|SCRIPT|OR|AND)\b)/i,
+                /(-{2}|\/\*|\*\/|;|'|")/,  // SQL comments and quotes
+                /(<|>|{|}|\[|\])/  // Script tags and brackets
+            ];
+
+            for (let pattern of sqlInjectionPatterns) {
+                if (pattern.test(input)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+    <script>
+        // Initialize navigation based on login status
+        function initializeNavigation() {
+            const minSideLink = document.getElementById('minSide');
+            const loginLink = document.getElementById('loginLink');
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+
+            if (isLoggedIn) {
+                // User is logged in - redirect from login page to profile
+                window.location.href = 'profilepage.html';
+                return;
+            }
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initializeNavigation);
+    </script></body>
+</html>

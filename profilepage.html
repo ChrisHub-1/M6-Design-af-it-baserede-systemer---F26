@@ -48,13 +48,26 @@
     <!-- Header & Navigation -->
     <header>
         <nav class="container">
-            <div class="logo">FindDinFilm.dk</div>
+            <a href="frontpage.html" class="logo">FindDinFilm.dk</a>
             <ul>
-                <li><a href="frontpage.html">Forside</a></li>
-                <li><a href="#">Min Side</a></li>
+                <li><a href="#" id="minSide">Min Side</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
             </ul>
         </nav>
     </header>
+
+    <!-- Navigation Tabs -->
+    <div class="button-container">
+        <a href="frontpage.html">
+            <button class="button">Forside</button>
+        </a>
+        <a href="sorting.html">
+            <button class="button">Søgemaskine</button>
+        </a>
+        <a href="profilepage.html">
+            <button class="button">Min Side</button>
+        </a>
+    </div>
 
     <!-- Hero / Page Title -->
     <div class="hero">
@@ -167,6 +180,9 @@
                 <div class="setfilm">Texas Chainsaw Massacre</div>
             </div>
 
+            <!-- Advertisement -->
+            <div class="ad-placeholder-large" style="margin-top: 40px; margin-bottom: 20px;">📢 Annonce</div>
+
         </div>
         <!-- End Main Content -->
 
@@ -178,5 +194,352 @@
         <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
     </footer>
 
+    <script>
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
+        }
+
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+        initializeTheme(); // Also call immediately in case DOM is already loaded
+
+        // Initialize navigation based on login status
+        function initializeNavigation() {
+            const minSideLink = document.getElementById('minSide');
+            const loginLink = document.getElementById('loginLink');
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+
+            if (isLoggedIn) {
+                // User is logged in
+                minSideLink.href = 'profilepage.html';
+                minSideLink.textContent = 'Min Side';
+                
+                // Change login link to profile icon
+                loginLink.textContent = '👤'; // Profile icon
+                loginLink.classList.add('profile-icon');
+                loginLink.href = '#';
+                loginLink.addEventListener('click', handleProfileClick);
+            } else {
+                // User is not logged in - redirect to login
+                window.location.href = 'login.html';
+            }
+        }
+
+        function handleProfileClick(e) {
+            e.preventDefault();
+            window.location.href = 'usersettings.html';
+        }
+
+        // Disable navigation button for current page
+        function disableCurrentPageButton() {
+            const currentPath = window.location.pathname;
+            const currentPage = currentPath.split('/').pop() || 'frontpage.html';
+            
+            const buttons = document.querySelectorAll('.button-container a');
+            buttons.forEach(button => {
+                const href = button.getAttribute('href');
+                if (href === currentPage || 
+                    (currentPage === '' && href === 'frontpage.html') ||
+                    (currentPage === 'index.html' && href === 'frontpage.html')) {
+                    button.classList.add('disabled');
+                }
+            });
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNavigation();
+            disableCurrentPageButton();
+        });
+        
+        // Also call immediately in case DOM is already loaded
+        disableCurrentPageButton();
+    </script>
+
+    <!-- Cookie Consent Modal -->
+    <div id="cookieConsent" class="cookie-consent-overlay">
+        <div class="cookie-consent-modal">
+            <div class="cookie-header">
+                <h2>🍪 Cookie Samtykke</h2>
+                <button class="close-btn" onclick="closeCookieConsent()">&times;</button>
+            </div>
+            
+            <div class="cookie-content">
+                <p>
+                    FindDinFilm bruger cookies for at forbedre din oplevelse. Vi bruger:
+                </p>
+                
+                <div class="consent-item">
+                    <input type="checkbox" id="consent-necessary" checked disabled>
+                    <label for="consent-necessary">
+                        <strong>Nødvendige Cookies</strong><br>
+                        <small>Påkrævet for at webstedet kan fungere</small>
+                    </label>
+                </div>
+
+                <div class="consent-item">
+                    <input type="checkbox" id="consent-analytics" checked>
+                    <label for="consent-analytics">
+                        <strong>Analytics Cookies</strong><br>
+                        <small>Hjælper os med at forstå, hvordan du bruger vores tjeneste</small>
+                    </label>
+                </div>
+
+                <div class="consent-item">
+                    <input type="checkbox" id="consent-marketing" checked>
+                    <label for="consent-marketing">
+                        <strong>Marketing Cookies</strong><br>
+                        <small>Bruges til at vise dig personaliserede annoncer og anbefalinger</small>
+                    </label>
+                </div>
+
+                <div class="consent-item">
+                    <input type="checkbox" id="consent-preferences" checked>
+                    <label for="consent-preferences">
+                        <strong>Præference Cookies</strong><br>
+                        <small>Gemmer dine indstillinger og præferencer</small>
+                    </label>
+                </div>
+            </div>
+
+            <div class="cookie-actions">
+                <button class="btn-reject" onclick="rejectCookies()">Afvis Alt (kun nødvendige)</button>
+                <button class="btn-accept" onclick="acceptAllCookies()">Accepter Alt</button>
+            </div>
+
+            <p class="cookie-link">
+                <a href="#" onclick="event.preventDefault(); alert('Privatlivspolitik: FindDinFilm respekterer dit privatliv.')">Læs vores privatlivspolitik</a>
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .cookie-consent-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            z-index: 10000;
+        }
+
+        .cookie-consent-modal {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px 12px 0 0;
+            border-top: 3px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background 0.3s;
+        }
+
+        .cookie-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cookie-header h2 {
+            color: var(--text-color);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        .cookie-content {
+            margin-bottom: 20px;
+        }
+
+        .cookie-content p {
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .consent-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(212, 165, 116, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid var(--border-color);
+            transition: background 0.3s;
+        }
+
+        .consent-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--border-color);
+        }
+
+        .consent-item label {
+            margin: 0;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .consent-item strong {
+            color: var(--text-color);
+            display: block;
+        }
+
+        .consent-item small {
+            color: var(--text-color);
+            opacity: 0.7;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .cookie-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-reject, .btn-accept {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-reject {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #5a6268;
+        }
+
+        .btn-accept {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #218838;
+        }
+
+        .cookie-link {
+            text-align: center;
+            margin: 0;
+            color: #bcbcbc;
+            font-size: 0.85rem;
+        }
+
+        .cookie-link a {
+            color: #0077ff;
+            text-decoration: none;
+        }
+
+        .cookie-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .cookie-consent-modal {
+                border-radius: 12px;
+                margin: 20px;
+                max-width: none;
+            }
+
+            .cookie-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script>
+        function initializeCookieConsent() {
+            const consent = sessionStorage.getItem('cookieConsent');
+            
+            if (!consent) {
+                document.getElementById('cookieConsent').style.display = 'flex';
+            } else {
+                document.getElementById('cookieConsent').style.display = 'none';
+            }
+        }
+
+        function acceptAllCookies() {
+            const consent = {
+                necessary: true,
+                analytics: document.getElementById('consent-analytics').checked,
+                marketing: document.getElementById('consent-marketing').checked,
+                preferences: document.getElementById('consent-preferences').checked,
+                date: new Date().toISOString()
+            };
+            
+            sessionStorage.setItem('cookieConsent', JSON.stringify(consent));
+            sessionStorage.setItem('analyticsAllowed', 'true');
+            sessionStorage.setItem('marketingAllowed', 'true');
+            sessionStorage.setItem('preferencesAllowed', 'true');
+            
+            document.getElementById('cookieConsent').style.display = 'none';
+        }
+
+        function rejectCookies() {
+            const consent = {
+                necessary: true,
+                analytics: false,
+                marketing: false,
+                preferences: false,
+                date: new Date().toISOString()
+            };
+            
+            sessionStorage.setItem('cookieConsent', JSON.stringify(consent));
+            sessionStorage.setItem('analyticsAllowed', 'false');
+            sessionStorage.setItem('marketingAllowed', 'false');
+            sessionStorage.setItem('preferencesAllowed', 'false');
+            
+            document.getElementById('cookieConsent').style.display = 'none';
+        }
+
+        function closeCookieConsent() {
+            alert('Du skal vælge dine cookie-præferencer');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCookieConsent);
+        } else {
+            initializeCookieConsent();
+        }
+    </script>
 </body>
 </html>
