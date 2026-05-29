@@ -217,20 +217,6 @@
         console.log('Firebase app initialized:', { name: app.name, options: app.options });
         console.log('Firebase auth app config:', auth.app.options);
 
-        // Log out any existing user when visiting login page (start logged out)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is currently logged in, log them out on login page
-                signOut(auth).then(() => {
-                    console.log('User logged out on login page');
-                    sessionStorage.removeItem('loggedIn');
-                    sessionStorage.removeItem('userId');
-                }).catch((error) => {
-                    console.error('Logout error:', error);
-                });
-            }
-        });
-
         const authForm = document.getElementById('authForm');
         const submitBtn = document.getElementById('submit-btn');
         const toggleModeBtn = document.getElementById('toggle-mode');
@@ -309,9 +295,9 @@
                 await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
                 console.log('User data saved successfully');
 
-                // Set session storage
-                sessionStorage.setItem('loggedIn', 'true');
-                sessionStorage.setItem('userId', user.uid);
+                // Set local storage for persistence
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userId', user.uid);
 
                 alert(mode === 'signup' ? 'Konto oprettet!' : 'Login vellykket!');
                 // Redirect to frontpage after successful login
@@ -331,8 +317,7 @@
     <script>
         // Initialize navigation based on login status
         function initializeNavigation() {
-            const loginLink = document.getElementById('loginLink');
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
 
             if (isLoggedIn) {
                 // User is logged in - redirect from login page to profile

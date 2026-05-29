@@ -105,6 +105,9 @@
         <a href="sorting.html">
             <button class="button">Søgemaskine</button>
         </a>
+        <a href="API_search.html">
+            <button class="button">Søgemaskine Prototype</button>
+        </a>
         <a href="profilepage.html">
             <button class="button">Min Side</button>
         </a>
@@ -198,7 +201,7 @@
         function initializeNavigation() {
             const minSideLink = document.getElementById('minSide');
             const loginLink = document.getElementById('loginLink');
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
 
             if (isLoggedIn) {
                 // User is logged in
@@ -489,7 +492,7 @@
 
     <script>
         function initializeCookieConsent() {
-            const consent = sessionStorage.getItem('cookieConsent');
+            const consent = localStorage.getItem('cookieConsent');
             
             if (!consent) {
                 document.getElementById('cookieConsent').style.display = 'flex';
@@ -507,10 +510,10 @@
                 date: new Date().toISOString()
             };
             
-            sessionStorage.setItem('cookieConsent', JSON.stringify(consent));
-            sessionStorage.setItem('analyticsAllowed', 'true');
-            sessionStorage.setItem('marketingAllowed', 'true');
-            sessionStorage.setItem('preferencesAllowed', 'true');
+            localStorage.setItem('cookieConsent', JSON.stringify(consent));
+            localStorage.setItem('analyticsAllowed', 'true');
+            localStorage.setItem('marketingAllowed', 'true');
+            localStorage.setItem('preferencesAllowed', 'true');
             
             document.getElementById('cookieConsent').style.display = 'none';
         }
@@ -524,10 +527,10 @@
                 date: new Date().toISOString()
             };
             
-            sessionStorage.setItem('cookieConsent', JSON.stringify(consent));
-            sessionStorage.setItem('analyticsAllowed', 'false');
-            sessionStorage.setItem('marketingAllowed', 'false');
-            sessionStorage.setItem('preferencesAllowed', 'false');
+            localStorage.setItem('cookieConsent', JSON.stringify(consent));
+            localStorage.setItem('analyticsAllowed', 'false');
+            localStorage.setItem('marketingAllowed', 'false');
+            localStorage.setItem('preferencesAllowed', 'false');
             
             document.getElementById('cookieConsent').style.display = 'none';
         }

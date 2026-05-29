@@ -465,7 +465,7 @@
         function initializeNavigation() {
             const minSideLink = document.getElementById('minSide');
             const loginLink = document.getElementById('loginLink');
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
 
             if (isLoggedIn) {
                 // User is logged in

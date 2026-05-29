@@ -106,6 +106,9 @@
         <a href="sorting.html">
             <button class="button">Søgemaskine</button>
         </a>
+        <a href="API_search.html">
+            <button class="button">Søgemaskine Prototype</button>
+        </a>
         <a href="profilepage.html">
             <button class="button">Min Side</button>
         </a>
@@ -252,7 +255,7 @@
         function initializeNavigation() {
             const minSideLink = document.getElementById('minSide');
             const loginLink = document.getElementById('loginLink');
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
 
             if (isLoggedIn) {
                 // User is logged in
@@ -361,7 +364,7 @@
 
         // Check login status on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
             
             if (!isLoggedIn) {
                 alert('Du skal være logget ind for at besøge Min Side.');
@@ -405,8 +408,8 @@
             }
 
             // User is logged in
-            sessionStorage.setItem('loggedIn', 'true');
-            sessionStorage.setItem('userId', user.uid);
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('userId', user.uid);
 
             // Update navigation
             const minSideLink = document.getElementById('minSide');
@@ -423,14 +426,7 @@
                 loginLink.href = '#';
                 loginLink.onclick = (e) => {
                     e.preventDefault();
-                    const action = prompt('Vælg handling:\n1 - Min profil\n2 - Log ud', '1');
-                    if (action === '2') {
-                        signOut(auth).then(() => {
-                            window.location.href = 'frontpage.html';
-                        });
-                    } else if (action === '1') {
-                        window.location.href = 'usersettings.html';
-                    }
+                    window.location.href = 'usersettings.html';
                 };
             }
 
@@ -477,7 +473,7 @@
 
         // Save streaming preferences when button is clicked
         window.saveStreamingServices = async function() {
-            const userId = sessionStorage.getItem('userId');
+            const userId = localStorage.getItem('userId');
             if (!userId) {
                 alert('Du skal være logget ind');
                 return;
@@ -522,7 +518,7 @@
 
         // Save preferences when button is clicked
         window.savePreferences = async function() {
-            const userId = sessionStorage.getItem('userId');
+            const userId = localStorage.getItem('userId');
             if (!userId) {
                 alert('Du skal være logget ind');
                 return;
