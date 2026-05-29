@@ -192,7 +192,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
         import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
         // Firebase configuration
@@ -216,6 +216,20 @@
 
         console.log('Firebase app initialized:', { name: app.name, options: app.options });
         console.log('Firebase auth app config:', auth.app.options);
+
+        // Log out any existing user when visiting login page (start logged out)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is currently logged in, log them out on login page
+                signOut(auth).then(() => {
+                    console.log('User logged out on login page');
+                    sessionStorage.removeItem('loggedIn');
+                    sessionStorage.removeItem('userId');
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                });
+            }
+        });
 
         const authForm = document.getElementById('authForm');
         const submitBtn = document.getElementById('submit-btn');
@@ -272,12 +286,16 @@
                 let userCredential;
 
                 if (mode === 'signup') {
+                    console.log('Creating user with email:', email);
                     userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 } else {
+                    console.log('Signing in user with email:', email);
                     userCredential = await signInWithEmailAndPassword(auth, email, password);
                 }
 
                 const user = userCredential.user;
+                console.log('User authenticated:', user.uid);
+                
                 const userData = {
                     email: user.email,
                     lastLoginAt: serverTimestamp()
@@ -287,70 +305,32 @@
                     userData.createdAt = serverTimestamp();
                 }
 
+                console.log('Saving user data to Firestore...');
                 await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
+                console.log('User data saved successfully');
+
+                // Set session storage
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userId', user.uid);
 
                 alert(mode === 'signup' ? 'Konto oprettet!' : 'Login vellykket!');
                 // Redirect to frontpage after successful login
+                console.log('Redirecting to frontpage...');
                 window.location.href = 'frontpage.html';
             } catch (error) {
                 console.error('Authentication error:', error.code, error.message);
                 if (mode === 'signup') {
-                    errorMessage.textContent = 'Oprettelse mislykkedes. Tjek email og adgangskode.';
+                    errorMessage.textContent = 'Oprettelse mislykkedes: ' + error.message;
                 } else {
-                    errorMessage.textContent = 'Login fejlede. Tjek email og adgangskode.';
+                    errorMessage.textContent = 'Login fejlede: ' + error.message;
                 }
             }
         });
     </script>
 
-            // Basic input validation - prevent SQL injection patterns
-            if (isValidInput(username) && isValidInput(password)) {
-                if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                    // Login successful
-                    sessionStorage.setItem('loggedIn', 'true');
-                    sessionStorage.setItem('username', username);
-                    window.location.href = 'frontpage.html';
-                } else {
-                    showError('Invalid username or password');
-                }
-            } else {
-                showError('Invalid input detected. Please check your input.');
-            }
-
-            // Clear password field for security
-            document.getElementById('password').value = '';
-        });
-
-        // Security: Check for common SQL injection patterns and special characters
-        function isValidInput(input) {
-            // Prevent common SQL injection keywords and patterns
-            const sqlInjectionPatterns = [
-                /(\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|SCRIPT|OR|AND)\b)/i,
-                /(-{2}|\/\*|\*\/|;|'|")/,  // SQL comments and quotes
-                /(<|>|{|}|\[|\])/  // Script tags and brackets
-            ];
-
-            for (let pattern of sqlInjectionPatterns) {
-                if (pattern.test(input)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
-        }
-    </script>
     <script>
         // Initialize navigation based on login status
         function initializeNavigation() {
-            const minSideLink = document.getElementById('minSide');
             const loginLink = document.getElementById('loginLink');
             const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
 
@@ -363,5 +343,6 @@
 
         // Run on page load
         document.addEventListener('DOMContentLoaded', initializeNavigation);
-    </script></body>
+    </script>
+</body>
 </html>

@@ -159,7 +159,7 @@
                     <label for="stream5"> Disney Plus</label><br>
                     
                     <br>
-                    <button class="button"> Gem Streamingtjenester </button> 
+                    <button class="button" onclick="saveStreamingServices()"> Gem Streamingtjenester </button> 
                 </div>
 
                 <!-- Column 2 -->
@@ -199,7 +199,7 @@
                 <label for="dark"> Dark Mode</label>
             <br>
             <br>
-            <button class="button"> Gem Præferencer </button>
+            <button class="button" onclick="savePreferences()"> Gem Præferencer </button>
             </div>
 
             <!-- Saved Movies -->
@@ -340,18 +340,23 @@
         }
 
         function removeFilm(index) {
-            // Check if user is logged in
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
-            
-            if (!isLoggedIn) {
-                alert('Du skal være logget ind for at fjerne film. Klik på Login øverst.');
-                return;
-            }
-
             let savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
-            savedFilms.splice(index, 1);
-            localStorage.setItem('myFilms', JSON.stringify(savedFilms));
-            loadSavedFilms();
+            const filmTitle = savedFilms[index]?.title;
+            
+            if (confirm(`Er du sikker på at du vil fjerne "${filmTitle}"?`)) {
+                savedFilms.splice(index, 1);
+                localStorage.setItem('myFilms', JSON.stringify(savedFilms));
+                loadSavedFilms();
+            }
+        }
+
+        // Set default theme radio button
+        function initializeThemeRadio() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const radio = document.getElementById(savedTheme === 'light' ? 'light' : 'dark');
+            if (radio) {
+                radio.checked = true;
+            }
         }
 
         // Check login status on page load
@@ -365,7 +370,188 @@
             }
 
             loadSavedFilms();
+            initializeThemeRadio();
         });
+    </script>
+
+    <script type="module">
+        // Firebase Auth Check for Profile Page
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
+            authDomain: "m6-database.firebaseapp.com",
+            projectId: "m6-database",
+            databaseURL: "https://m6-database.firebaseio.com",
+            storageBucket: "m6-database.appspot.com",
+            messagingSenderId: "172309206166",
+            appId: "1:172309206166:web:c30fcffb805478abce9eb7",
+            measurementId: "G-WZ7SVX56XP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Listen for auth changes
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // User is not logged in, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // User is logged in
+            sessionStorage.setItem('loggedIn', 'true');
+            sessionStorage.setItem('userId', user.uid);
+
+            // Update navigation
+            const minSideLink = document.getElementById('minSide');
+            const loginLink = document.getElementById('loginLink');
+
+            if (minSideLink) {
+                minSideLink.href = 'profilepage.html';
+                minSideLink.textContent = 'Min Side';
+            }
+
+            if (loginLink) {
+                loginLink.textContent = '👤';
+                loginLink.classList.add('profile-icon');
+                loginLink.href = '#';
+                loginLink.onclick = (e) => {
+                    e.preventDefault();
+                    const action = prompt('Vælg handling:\n1 - Min profil\n2 - Log ud', '1');
+                    if (action === '2') {
+                        signOut(auth).then(() => {
+                            window.location.href = 'frontpage.html';
+                        });
+                    } else if (action === '1') {
+                        window.location.href = 'usersettings.html';
+                    }
+                };
+            }
+
+            // Load user preferences from Firestore
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    // Load streaming service preferences
+                    if (userData.preferences && userData.preferences.streamingServices) {
+                        userData.preferences.streamingServices.forEach(service => {
+                            const checkbox = document.getElementById(`stream${getStreamNumber(service)}`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+
+                    // Load rental preference
+                    if (userData.preferences && userData.preferences.noRent) {
+                        const noRentCheckbox = document.getElementById('norent');
+                        if (noRentCheckbox) noRentCheckbox.checked = userData.preferences.noRent;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user preferences:', error);
+            }
+        });
+
+        // Map service names to numbers
+        function getStreamNumber(service) {
+            const services = {
+                'netflix': 1,
+                'amazon': 2,
+                'viaplay': 3,
+                'hbomax': 4,
+                'disneyplus': 5,
+                'tv2play': 6,
+                'drtv': 7,
+                'paramountplus': 8,
+                'filmstriben': 9,
+                'yousee': 10
+            };
+            return services[service] || 1;
+        }
+
+        // Save streaming preferences when button is clicked
+        window.saveStreamingServices = async function() {
+            const userId = sessionStorage.getItem('userId');
+            if (!userId) {
+                alert('Du skal være logget ind');
+                return;
+            }
+
+            const services = [];
+            const serviceMap = {
+                1: 'netflix',
+                2: 'amazon',
+                3: 'viaplay',
+                4: 'hbomax',
+                5: 'disneyplus',
+                6: 'tv2play',
+                7: 'drtv',
+                8: 'paramountplus',
+                9: 'filmstriben',
+                10: 'yousee'
+            };
+
+            for (let i = 1; i <= 10; i++) {
+                const checkbox = document.getElementById(`stream${i}`);
+                if (checkbox && checkbox.checked) {
+                    services.push(serviceMap[i]);
+                }
+            }
+
+            try {
+                await setDoc(doc(db, 'users', userId), {
+                    preferences: {
+                        streamingServices: services,
+                        noRent: document.getElementById('norent')?.checked || false,
+                        updatedAt: serverTimestamp()
+                    }
+                }, { merge: true });
+
+                alert('Streamingtjenester gemt!');
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                alert('Der var en fejl ved gemning af præferencer');
+            }
+        };
+
+        // Save preferences when button is clicked
+        window.savePreferences = async function() {
+            const userId = sessionStorage.getItem('userId');
+            if (!userId) {
+                alert('Du skal være logget ind');
+                return;
+            }
+
+            try {
+                const theme = document.querySelector('input[name="mode"]:checked')?.value || 'DARK';
+                await setDoc(doc(db, 'users', userId), {
+                    preferences: {
+                        theme: theme === 'LIGHT' ? 'light' : 'dark',
+                        updatedAt: serverTimestamp()
+                    }
+                }, { merge: true });
+
+                // Apply theme immediately
+                if (theme === 'LIGHT') {
+                    document.documentElement.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.remove('light-mode');
+                    localStorage.setItem('theme', 'dark');
+                }
+
+                alert('Præferencer gemt!');
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                alert('Der var en fejl ved gemning af præferencer');
+            }
+        };
     </script>
 
     <!-- Cookie Consent Modal -->
