@@ -254,25 +254,37 @@
         <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
     </footer>
 
-    <script>
-        // Initialize theme from localStorage
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'light') {
-                document.documentElement.classList.add('light-mode');
-            } else {
-                document.documentElement.classList.remove('light-mode');
-            }
-        }
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
-        // Call on page load
-        document.addEventListener('DOMContentLoaded', initializeTheme);
-        initializeTheme(); // Also call immediately in case DOM is already loaded
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
+            authDomain: "m6-database.firebaseapp.com",
+            projectId: "m6-database",
+            databaseURL: "https://m6-database.firebaseio.com",
+            storageBucket: "m6-database.appspot.com",
+            messagingSenderId: "172309206166",
+            appId: "1:172309206166:web:c30fcffb805478abce9eb7",
+            measurementId: "G-WZ7SVX56XP"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
         const signupForm = document.getElementById('signupForm');
         const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
 
         // Password validation in real-time
         passwordInput.addEventListener('input', function() {
@@ -307,16 +319,14 @@
             }
         }
 
-        // Form submission
-        signupForm.addEventListener('submit', function(e) {
+        // Form submission with Firebase
+        signupForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = usernameInput.value.trim();
-            const email = document.getElementById('email').value.trim();
+            const email = emailInput.value.trim();
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
 
             // Clear messages
             errorMessage.style.display = 'none';
@@ -362,13 +372,44 @@
                 return;
             }
 
-            // If all validation passes
-            showSuccess('Account created successfully! Redirecting to login...');
-            
-            // Simulate account creation and redirect
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
+            // Create account with Firebase
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save user data to Firestore
+                const userData = {
+                    username: username,
+                    email: user.email,
+                    createdAt: serverTimestamp(),
+                    savedFilms: [],
+                    preferences: {
+                        streamingServices: [],
+                        noRent: false,
+                        theme: 'dark'
+                    }
+                };
+
+                await setDoc(doc(db, 'users', user.uid), userData);
+
+                showSuccess('Account created successfully! Redirecting to login...');
+                
+                // Redirect to login after successful signup
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } catch (error) {
+                console.error('Signup error:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    showError('This email is already in use. Please try another one.');
+                } else if (error.code === 'auth/weak-password') {
+                    showError('Password is too weak. Please use a stronger password.');
+                } else if (error.code === 'auth/invalid-email') {
+                    showError('Invalid email address.');
+                } else {
+                    showError('Account creation failed. Please try again.');
+                }
+            }
         });
 
         // Security: Check for common SQL injection patterns and special characters
@@ -393,19 +434,33 @@
         }
 
         function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
         }
 
         function showSuccess(message) {
-            const successMessage = document.getElementById('successMessage');
             successMessage.textContent = message;
             successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
         }
     </script>
 
     <script>
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
+        }
+
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+        initializeTheme(); // Also call immediately in case DOM is already loaded
+
         // Initialize navigation based on login status
         function initializeNavigation() {
             const minSideLink = document.getElementById('minSide');

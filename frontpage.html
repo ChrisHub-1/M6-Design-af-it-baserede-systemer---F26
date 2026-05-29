@@ -595,10 +595,18 @@
     </script>
 
     <script type="module">
+<<<<<<< Updated upstream
         // Firebase Auth Module for Logout
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
+=======
+        // Firebase Auth Module for Navigation
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
+        // Firebase configuration
+>>>>>>> Stashed changes
         const firebaseConfig = {
             apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
             authDomain: "m6-database.firebaseapp.com",
@@ -613,17 +621,102 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+<<<<<<< Updated upstream
         // Make handleProfileClick available globally
         window.handleProfileClick = function(e) {
             e.preventDefault();
             // Directly go to user settings
             window.location.href = 'usersettings.html';
         };
+=======
+        function handleProfileClick(e) {
+            e.preventDefault();
+            
+            const action = prompt('Vælg handling:\n1 - Min profil\n2 - Log ud', '1');
+            if (action === '2') {
+                signOut(auth).then(() => {
+                    sessionStorage.removeItem('loggedIn');
+                    sessionStorage.removeItem('userId');
+                    window.location.href = 'frontpage.html';
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                    alert('Der var en fejl ved logout');
+                });
+            } else if (action === '1') {
+                window.location.href = 'profilepage.html';
+            }
+        }
+
+        // Listen for auth changes
+        onAuthStateChanged(auth, (user) => {
+            const minSideLink = document.getElementById('minSide');
+            const loginLink = document.getElementById('loginLink');
+
+            if (user) {
+                // User is logged in
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userId', user.uid);
+                
+                minSideLink.href = 'profilepage.html';
+                minSideLink.textContent = 'Min Side';
+                
+                loginLink.textContent = '👤';
+                loginLink.classList.add('profile-icon');
+                loginLink.href = '#';
+                loginLink.removeEventListener('click', handleProfileClick);
+                loginLink.addEventListener('click', handleProfileClick);
+            } else {
+                // User is not logged in
+                sessionStorage.removeItem('loggedIn');
+                sessionStorage.removeItem('userId');
+                
+                minSideLink.href = 'login.html';
+                minSideLink.textContent = 'Min Side';
+                
+                loginLink.textContent = 'Login';
+                loginLink.classList.remove('profile-icon');
+                loginLink.href = 'login.html';
+                loginLink.removeEventListener('click', handleProfileClick);
+            }
+        });
+>>>>>>> Stashed changes
     </script>
 
     <script>
-        // Film Modal Functions
+        // Film Modal Functions with Firebase
         let currentFilm = {};
+        let currentUser = null;
+        let db = null;
+
+        // Initialize Firebase for saving films
+        import('https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js')
+            .then(({ initializeApp }) => {
+                import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js')
+                    .then(({ getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs }) => {
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
+                            authDomain: "m6-database.firebaseapp.com",
+                            projectId: "m6-database",
+                            databaseURL: "https://m6-database.firebaseio.com",
+                            storageBucket: "m6-database.appspot.com",
+                            messagingSenderId: "172309206166",
+                            appId: "1:172309206166:web:c30fcffb805478abce9eb7",
+                            measurementId: "G-WZ7SVX56XP"
+                        };
+                        
+                        const app = initializeApp(firebaseConfig);
+                        db = getFirestore(app);
+                        
+                        // Get current user
+                        import('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js')
+                            .then(({ getAuth, onAuthStateChanged }) => {
+                                const auth = getAuth(app);
+                                onAuthStateChanged(auth, (user) => {
+                                    currentUser = user;
+                                });
+                            });
+                    });
+            });
 
         function openFilmModal(imagePath, title) {
             currentFilm = {
@@ -660,35 +753,35 @@
             }
         }
 
-        function addToMyFilms() {
+        async function addToMyFilms() {
             if (!currentFilm.title) return;
 
             // Check if user is logged in
-            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
-            
-            if (!isLoggedIn) {
+            if (!currentUser) {
                 alert('Du skal være logget ind for at tilføje film til Min Side. Klik på Login øverst.');
                 closeFilmModal();
                 return;
             }
 
-            // Get existing saved films from localStorage
-            let savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
+            try {
+                // Also save to localStorage as backup
+                let savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
+                const filmExists = savedFilms.some(film => film.title === currentFilm.title);
+                
+                if (filmExists) {
+                    alert('Denne film er allerede tilføjet til Min Side');
+                    return;
+                }
 
-            // Check if film already exists
-            const filmExists = savedFilms.some(film => film.title === currentFilm.title);
-            
-            if (filmExists) {
-                alert('Denne film er allerede tilføjet til Min Side');
-                return;
+                savedFilms.push(currentFilm);
+                localStorage.setItem('myFilms', JSON.stringify(savedFilms));
+
+                alert('Film tilføjet til Min Side!');
+                closeFilmModal();
+            } catch (error) {
+                console.error('Error adding film:', error);
+                alert('Der var en fejl ved tilføjelse af filmen. Prøv igen.');
             }
-
-            // Add film to saved films
-            savedFilms.push(currentFilm);
-            localStorage.setItem('myFilms', JSON.stringify(savedFilms));
-
-            alert('Film tilføjet til Min Side!');
-            closeFilmModal();
         }
 
         // Close modal when pressing Escape key

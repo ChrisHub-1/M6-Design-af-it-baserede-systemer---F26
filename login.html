@@ -192,7 +192,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
         import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
         // Firebase configuration
@@ -216,6 +216,20 @@
 
         console.log('Firebase app initialized:', { name: app.name, options: app.options });
         console.log('Firebase auth app config:', auth.app.options);
+
+        // Log out any existing user when visiting login page (start logged out)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is currently logged in, log them out on login page
+                signOut(auth).then(() => {
+                    console.log('User logged out on login page');
+                    sessionStorage.removeItem('loggedIn');
+                    sessionStorage.removeItem('userId');
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                });
+            }
+        });
 
         const authForm = document.getElementById('authForm');
         const submitBtn = document.getElementById('submit-btn');
