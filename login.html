@@ -89,23 +89,26 @@
             padding: 10px;
             background: rgba(255, 107, 107, 0.1);
             border-radius: 6px;
-            display: none;
+            min-height: 20px;
         }
 
-        .signup-link {
+        .toggle-row {
             text-align: center;
             margin-top: 20px;
             color: #bcbcbc;
         }
 
-        .signup-link a {
+        .toggle-row button {
             color: #0077ff;
             text-decoration: none;
             font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
             transition: color 0.3s;
         }
 
-        .signup-link a:hover {
+        .toggle-row button:hover {
             color: #00aaff;
         }
 
@@ -125,7 +128,7 @@
         <nav class="container">
             <a href="frontpage.html" class="logo">FindDinFilm.dk</a>
             <ul>
-                <li><a href="#" id="minSide">Min Side</a></li>
+                <li><a href="frontpage.html">Forside</a></li>
                 <li><a href="login.html" id="loginLink">Login</a></li>
             </ul>
         </nav>
@@ -133,38 +136,50 @@
 
     <div class="login-container">
         <div class="login-box">
-            <h2>Login</h2>
+            <h2 id="form-title">Log ind</h2>
             <div class="error-message" id="errorMessage"></div>
-            <form id="loginForm">
+            <form id="authForm">
                 <div class="form-group">
-                    <label for="username">Username:</label>
+                    <label for="email">Email:</label>
                     <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        placeholder="Enter your username"
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
                         required
-                        autocomplete="username"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="password">Adgangskode:</label>
                     <input 
                         type="password" 
                         id="password" 
                         name="password" 
                         placeholder="Enter your password"
                         required
-                        autocomplete="current-password"
+                        minlength="6"
                     >
                 </div>
 
-                <button type="submit" class="login-button">Login</button>
+                <div class="form-group">
+                    <label for="confirm-password">Bekræft adgangskode:</label>
+                    <input 
+                        type="password" 
+                        id="confirm-password" 
+                        name="confirm-password" 
+                        placeholder="Confirm your password"
+                        minlength="6"
+                        style="display:none;"
+                    >
+                </div>
+
+                <button type="submit" class="login-button" id="submit-btn">Log ind</button>
             </form>
 
-            <div class="signup-link">
-                Don't have an account yet? <a href="createuser.html">Create one</a>
+            <div class="toggle-row">
+                <span id="toggle-text">Har du ikke en konto? </span>
+                <button id="toggle-mode" type="button">Opret konto</button>
             </div>
         </div>
     </div>
@@ -173,31 +188,120 @@
         <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
     </footer>
 
-    <script>
-        // Initialize theme from localStorage
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'light') {
-                document.documentElement.classList.add('light-mode');
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
+            authDomain: "m6-database.firebaseapp.com",
+            projectId: "m6-database",
+            databaseURL: "https://m6-database.firebaseio.com",
+            storageBucket: "m6-database.appspot.com",
+            messagingSenderId: "172309206166",
+            appId: "1:172309206166:web:c30fcffb805478abce9eb7",
+            measurementId: "G-WZ7SVX56XP"
+        };
+
+        console.log('Firebase config loaded:', firebaseConfig);
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        console.log('Firebase app initialized:', { name: app.name, options: app.options });
+        console.log('Firebase auth app config:', auth.app.options);
+
+        const authForm = document.getElementById('authForm');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleModeBtn = document.getElementById('toggle-mode');
+        const toggleText = document.getElementById('toggle-text');
+        const formTitle = document.getElementById('form-title');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const errorMessage = document.getElementById('errorMessage');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        let mode = 'login';
+
+        function setMode(newMode) {
+            mode = newMode;
+            if (mode === 'signup') {
+                formTitle.textContent = 'Opret konto';
+                submitBtn.textContent = 'Opret konto';
+                toggleText.textContent = 'Har du allerede en konto? ';
+                toggleModeBtn.textContent = 'Log ind';
+                confirmPasswordInput.style.display = 'block';
+                confirmPasswordInput.required = true;
             } else {
-                document.documentElement.classList.remove('light-mode');
+                formTitle.textContent = 'Log ind';
+                submitBtn.textContent = 'Log ind';
+                toggleText.textContent = 'Har du ikke en konto? ';
+                toggleModeBtn.textContent = 'Opret konto';
+                confirmPasswordInput.style.display = 'none';
+                confirmPasswordInput.required = false;
             }
+            errorMessage.textContent = '';
         }
 
-        // Call on page load
-        document.addEventListener('DOMContentLoaded', initializeTheme);
-        initializeTheme(); // Also call immediately in case DOM is already loaded
-
-        // Simple hardcoded login for testing
-        const VALID_USERNAME = 'admin';
-        const VALID_PASSWORD = 'password123';
-
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        toggleModeBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
+            setMode(mode === 'login' ? 'signup' : 'login');
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            errorMessage.textContent = '';
+
+            if (mode === 'signup' && password !== confirmPassword) {
+                errorMessage.textContent = 'Adgangskoderne matcher ikke.';
+                return;
+            }
+
+            try {
+                let userCredential;
+
+                if (mode === 'signup') {
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                } else {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+                }
+
+                const user = userCredential.user;
+                const userData = {
+                    email: user.email,
+                    lastLoginAt: serverTimestamp()
+                };
+
+                if (mode === 'signup') {
+                    userData.createdAt = serverTimestamp();
+                }
+
+                await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
+
+                alert(mode === 'signup' ? 'Konto oprettet!' : 'Login vellykket!');
+                // Redirect to frontpage after successful login
+                window.location.href = 'frontpage.html';
+            } catch (error) {
+                console.error('Authentication error:', error.code, error.message);
+                if (mode === 'signup') {
+                    errorMessage.textContent = 'Oprettelse mislykkedes. Tjek email og adgangskode.';
+                } else {
+                    errorMessage.textContent = 'Login fejlede. Tjek email og adgangskode.';
+                }
+            }
+        });
+    </script>
 
             // Basic input validation - prevent SQL injection patterns
             if (isValidInput(username) && isValidInput(password)) {
