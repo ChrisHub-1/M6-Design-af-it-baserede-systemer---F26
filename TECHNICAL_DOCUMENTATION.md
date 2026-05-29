@@ -1,6 +1,6 @@
 # FindDinFilm - Teknisk Dokumentation
 
-## 📋 Projektoverview
+## Projektoverview
 
 **FindDinFilm** er en webtilpasset filmfinderplatform designet til at hjælpe brugere med at søge efter film og få overblik over tilgængelige film på forskellige streamingservices. Platformen er bygget som en statisk frontend-applikation med integration til Firebase/Firestore.
 
@@ -8,13 +8,13 @@
 
 ---
 
-## 🏗️ Arkitektur
+## Arkitektur
 
 ### Struktur
 
 ```
 FindDinFilm/
-├── frontpage.html           # Landingsside & søgepunkt
+├── frontpage.html          # Landingsside & søgepunkt
 ├── login.html              # Loginformular
 ├── createuser.html         # Registreringsside
 ├── profilepage.html        # Brugerprofil
@@ -26,7 +26,6 @@ FindDinFilm/
 ├── firebase.json           # Firebase-konfiguration
 ├── firestore.rules         # Firestore sikkerhedsregler
 ├── cookie-consent.html     # Cookie-consentbanner
-├── hello world.py          # (Hjælpefil)
 └── FilmImages/             # Mapper til filmplakater
 ```
 
@@ -42,7 +41,7 @@ FindDinFilm/
 
 ---
 
-## 🎨 Design & Styling
+## Design & Styling
 
 ### CSS-arkitektur
 
@@ -65,7 +64,7 @@ Hele applikationen bruger et centralt **`style.css`** stylesheet med følgende f
 
 | Komponent | Beskrivelse |
 |-----------|-----------|
-| **Header** | Sticky navigation med logo og loginlink |
+| **Header** | Navigation med logo og loginlink |
 | **Navigation** | Horisontale links + mobil-toggle |
 | **Hero Section** | Gradientbaggrund med stor overskrift |
 | **Grid Layout** | 3-kolonne grid for cards (responsive: 2 på tablet, 1 på mobil) |
@@ -82,7 +81,7 @@ Hele applikationen bruger et centralt **`style.css`** stylesheet med følgende f
 
 ---
 
-## 📄 Sidestruktur
+## Sidestruktur
 
 ### 1. **frontpage.html** - Landingsside
 **Formål:** Første indtastpunkt, søgefunktionalitet, featured films
@@ -119,7 +118,7 @@ Hele applikationen bruger et centralt **`style.css`** stylesheet med følgende f
 - Navn
 - Email
 - Adgangskode (med valideringskrav)
-- Bekræf adgangskode
+- Bekræft adgangskode
 - Vilkår & betingelser checkbox
 
 ---
@@ -168,7 +167,7 @@ Hele applikationen bruger et centralt **`style.css`** stylesheet med følgende f
 
 ---
 
-## 🔐 Database-schema (Firestore)
+## Database (Firestore)
 
 ### Collection: `users`
 ```json
@@ -210,7 +209,7 @@ Hele applikationen bruger et centralt **`style.css`** stylesheet med følgende f
 
 ---
 
-## 🔒 Sikkerhed
+## Sikkerhed
 
 ### Firestore Rules (`firestore.rules`)
 
@@ -233,14 +232,14 @@ service cloud.firestore {
 ```
 
 ### Bedste praksis
-- ✅ Hashed adgangskoder (Firebase Authentication håndterer dette)
-- ✅ HTTPS for al datakommunikation
-- ✅ CORS headers for API-sikkerhed
-- ✅ Cookie-consent overholdelse (GDPR)
+- Hashed adgangskoder (Firebase Authentication håndterer dette)
+- HTTPS for al datakommunikation
+- CORS headers for API-sikkerhed
+- Cookie-consent overholdelse (GDPR)
 
 ---
 
-## 🎯 Konfiguration
+## Konfiguration
 
 ### `Data.json` - Sitemetadata
 ```json
@@ -265,7 +264,7 @@ service cloud.firestore {
 
 ---
 
-## 🔄 Workflows
+## Workflows
 
 ### Bruger-workflow (Login/Registrering)
 ```
@@ -291,7 +290,7 @@ Resultater vises i grid
 
 ---
 
-## 📱 Responsive Design
+## Responsive Design
 
 ### Breakpoints
 - **Desktop (> 900px):** Full 3-kolonne layout
@@ -311,7 +310,7 @@ nav ul.active {
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Hosting
 - **Firebase Hosting** (anbefalet)
@@ -328,7 +327,7 @@ firebase deploy
 
 ---
 
-## 🔧 Vedligeholdelse
+## Vedligeholdelse
 
 ### Filer der kræver opdatering
 | Fil | Årsag | Hyppighed |
@@ -339,14 +338,14 @@ firebase deploy
 | HTML-filer | Indhold & layout | Løbende |
 
 ### Browser-kompatibilitet
-- ✅ Chrome/Chromium (seneste 2 versioner)
-- ✅ Firefox (seneste 2 versioner)
-- ✅ Safari (seneste 2 versioner)
-- ✅ Edge (seneste 2 versioner)
+- Chrome (seneste 2 versioner)
+- Firefox (seneste 2 versioner)
+- Safari (seneste 2 versioner)
+- Edge (seneste 2 versioner)
 
 ---
 
-## 📚 Dependencies
+## Dependencies
 
 | Teknologi | Formål | Version |
 |-----------|--------|---------|
@@ -358,7 +357,7 @@ firebase deploy
 
 ---
 
-## 🐛 Debugging
+## Debugging
 
 ### Console logging
 Åbn DevTools (F12) → Console for fejlmeldinger
@@ -376,15 +375,15 @@ db.collection('films').get().then(snapshot => {
 
 ---
 
-## 📞 Support & Kontakt
+## Support & Kontakt
 
-**Projektansvarlig:** Christian (Admin)  
+**Projektansvarlig:** Christian Larsen, Christoffer Holler, Andreas Hansen (Admin)  
 **Repository:** `M6-Design-af-it-baserede-systemer---F26`  
 **Seneste opdatering:** 2026-05-29
 
 ---
 
-## 📜 Licens & Vilkår
+## Licens & Vilkår
 
-Denne dokumentation gælder for FindDinFilm-projektet under M6-kurset (AAU).
+Dokumentationen gælder for FindDinFilm-projektet under M6-kurset på IT-ledelse 8. semester, AAU.
 
