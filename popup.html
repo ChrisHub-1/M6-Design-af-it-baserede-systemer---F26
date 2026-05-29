@@ -206,6 +206,10 @@
 
             await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
 
+            // Set login status in sessionStorage so other windows know user is logged in
+            window.opener.sessionStorage.setItem('loggedIn', 'true');
+            window.opener.sessionStorage.setItem('userEmail', user.email);
+
             alert(mode === 'signup' ? 'Konto oprettet!' : 'Login successful!');
             window.close();
         } catch (error) {

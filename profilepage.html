@@ -11,17 +11,59 @@
         .gemtfilm, .setfilm {
             width: 150px;
             height: 225px;
-            color: black;
+            color: white;
             border: 4px solid darkslategrey;
             padding: 10px;
             margin: 10px;
             text-align: center;
             float: left;
             border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .gemtfilm {
-            background-color: pink;
+            background-color: rgba(255, 192, 203, 0.3);
+            background-blend-mode: overlay;
+        }
+
+        .gemtfilm:hover, .setfilm:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 119, 255, 0.3);
+        }
+
+        .gemtfilm p, .setfilm p {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            margin: 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .gemtfilm .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gemtfilm:hover .remove-btn {
+            opacity: 1;
         }
 
         .setfilm {
@@ -163,11 +205,8 @@
             <!-- Saved Movies -->
             <h3 style="border-bottom: 2px solid #fff; padding-bottom: 8px;">Gemte Film</h3>
             <p style="margin-bottom: 15px;">Få besked når disse bliver tilgængelige</p>
-            <div class="film-row">
-                <div class="gemtfilm">Fear and Loathing in Las Vegas</div>
-                <div class="gemtfilm">Cannonball Run 2</div>
-                <div class="gemtfilm">Oliver og Company</div>
-                <div class="gemtfilm">Madam Web</div>
+            <div class="film-row" id="savedFilmsContainer">
+                <p style="color: #bcbcbc; padding: 20px;">Ingen gemte film endnu. Klik på en film på forsiden for at gemme den.</p>
             </div>
 
             <!-- Favourite Movies -->
@@ -226,8 +265,11 @@
                 loginLink.href = '#';
                 loginLink.addEventListener('click', handleProfileClick);
             } else {
-                // User is not logged in - redirect to login
-                window.location.href = 'login.html';
+                // User is not logged in - still show page but link to login
+                minSideLink.href = 'profilepage.html';
+                minSideLink.textContent = 'Min Side';
+                loginLink.href = 'login.html';
+                loginLink.textContent = 'Login';
             }
         }
 
@@ -260,6 +302,70 @@
         
         // Also call immediately in case DOM is already loaded
         disableCurrentPageButton();
+    </script>
+
+    <script>
+        // Load and display saved films from localStorage
+        function loadSavedFilms() {
+            const container = document.getElementById('savedFilmsContainer');
+            const savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
+
+            if (savedFilms.length === 0) {
+                container.innerHTML = '<p style="color: #bcbcbc; padding: 20px;">Ingen gemte film endnu. Klik på en film på forsiden for at gemme den.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            savedFilms.forEach((film, index) => {
+                const filmDiv = document.createElement('div');
+                filmDiv.className = 'gemtfilm';
+                filmDiv.style.backgroundImage = `url('${film.image}')`;
+                
+                const filmTitle = document.createElement('p');
+                filmTitle.textContent = film.title;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = (e) => {
+                    e.preventDefault();
+                    removeFilm(index);
+                };
+
+                filmDiv.appendChild(removeBtn);
+                filmDiv.appendChild(filmTitle);
+                container.appendChild(filmDiv);
+            });
+        }
+
+        function removeFilm(index) {
+            // Check if user is logged in
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                alert('Du skal være logget ind for at fjerne film. Klik på Login øverst.');
+                return;
+            }
+
+            let savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
+            savedFilms.splice(index, 1);
+            localStorage.setItem('myFilms', JSON.stringify(savedFilms));
+            loadSavedFilms();
+        }
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                alert('Du skal være logget ind for at besøge Min Side.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadSavedFilms();
+        });
     </script>
 
     <!-- Cookie Consent Modal -->
