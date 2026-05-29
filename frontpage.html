@@ -584,11 +584,6 @@
             }
         }
 
-        function handleProfileClick(e) {
-            e.preventDefault();
-            window.location.href = 'usersettings.html';
-        }
-
         // Run on page load
         document.addEventListener('DOMContentLoaded', function() {
             initializeNavigation();
@@ -597,6 +592,33 @@
         
         // Also call immediately in case DOM is already loaded
         disableCurrentPageButton();
+    </script>
+
+    <script type="module">
+        // Firebase Auth Module for Logout
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyh8ecigpscR8gPviU1qQxee5Rp1eeDqs",
+            authDomain: "m6-database.firebaseapp.com",
+            projectId: "m6-database",
+            databaseURL: "https://m6-database.firebaseio.com",
+            storageBucket: "m6-database.appspot.com",
+            messagingSenderId: "172309206166",
+            appId: "1:172309206166:web:c30fcffb805478abce9eb7",
+            measurementId: "G-WZ7SVX56XP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make handleProfileClick available globally
+        window.handleProfileClick = function(e) {
+            e.preventDefault();
+            // Directly go to user settings
+            window.location.href = 'usersettings.html';
+        };
     </script>
 
     <script>
