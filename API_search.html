@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Søg – FindDinFilm</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/api-ui.css">
+</head>
+<body>
+
+  <!-- ── Header (matches frontpage.html exactly) ── -->
+  <header>
+    <nav class="container">
+      <div class="logo">FindDinFilm.dk</div>
+      <ul>
+        <li><a href="frontpage.html">Forside</a></li>
+        <li><a href="#">Min Side</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ── Search bar (reuses .search-bar / .search-main from style.css) ── -->
+  <div class="search-bar">
+    <h1 class="intro-text">Søg efter film og serier og se hvor de streames i Danmark.</h1>
+    <div class="search-main">
+      <input type="text" id="q" placeholder="Søg efter film eller serie…" autocomplete="off">
+      <button onclick="doSearch()">Søg</button>
+    </div>
+
+    <!-- Filter buttons sit just below the search row -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">Alle</button>
+      <button class="filter-btn"        onclick="setFilter(this,'movie')">Film</button>
+      <button class="filter-btn"        onclick="setFilter(this,'tv')">Serier</button>
+    </div>
+  </div>
+
+  <!-- ── Status + grid + detail, all inside the page wrapper for edge padding ── -->
+  <div class="api-page-wrap">
+    <div id="api-status" style="padding-top:16px;"></div>
+    <div id="api-grid"></div>
+    <div id="api-detail" style="padding-bottom:40px;"></div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <a href="frontpage.html">&copy; 2025 FindDinFilm.dk</a>
+  </footer>
+
+  <style>
+    /* ── Page content wrapper – gives breathing room on all sides ── */
+    .api-page-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    @media (max-width: 700px) {
+      .api-page-wrap { padding: 0 16px; }
+    }
+
+    /* ── Filter buttons ── */
+    .filter-btn {
+      background: transparent;
+      border: 1px solid #1a4a6e;
+      border-radius: 4px;
+      color: #bcbcbc;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: #0077ff;
+      color: #efeded;
+      background: rgba(0,119,255,.12);
+    }
+
+    /* ── Result grid ── */
+    .api-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 18px;
+      padding: 10px 0 30px;
+    }
+
+    /* ── Individual card ── */
+    .api-card {
+      background: #104978;
+      border: 1px solid #1a4a6e;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      animation: apiCardIn .3s ease both;
+    }
+    .api-card:hover {
+      transform: translateY(-4px);
+      border-color: #0077ff;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(0,119,255,.3);
+    }
+    @keyframes apiCardIn {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0);    }
+    }
+    .api-card img {
+      width: 100%; aspect-ratio: 2/3;
+      object-fit: cover; display: block;
+      background: #0b3252;
+    }
+    .api-card-no-poster {
+      width: 100%; aspect-ratio: 2/3;
+      background: #0b3252;
+      display: flex; align-items: center; justify-content: center;
+      color: #1a4a6e; font-size: 3rem;
+    }
+    .api-card-body { padding: 10px 12px 12px; }
+    .api-card-title {
+      font-size: .88rem; font-weight: bold; color: #efeded;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 5px;
+    }
+    .api-card-meta { display:flex; justify-content:space-between; align-items:center; }
+    .api-card-year  { font-size: .72rem; color: #bcbcbc; }
+    .api-card-type  {
+      font-size: .65rem; letter-spacing: .08em; text-transform: uppercase;
+      font-weight: bold; padding: 2px 7px; border-radius: 3px;
+    }
+    .type-movie { background: rgba(0,119,255,.18); color: #7fd2ff; }
+    .type-tv    { background: rgba(75,232,138,.1);  color: #4be88a; }
+
+    /* ── Status ── */
+    .api-status-text {
+      text-align: center; font-size: .88rem; color: #bcbcbc;
+      padding: 12px 0; letter-spacing: .06em;
+    }
+    .api-spinner {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid #1a4a6e; border-top-color: #0077ff;
+      border-radius: 50%; animation: spin .7s linear infinite;
+      vertical-align: middle; margin-right: 7px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── Empty state ── */
+    .api-empty {
+      text-align: center; padding: 60px 20px; color: #bcbcbc;
+    }
+    .api-empty .big { font-size: 3.5rem; display:block; margin-bottom:12px; }
+
+    /* ── Detail panel overrides ──────────────────────────────────────────
+       api-ui.css sets .fdf-result-inner to 200px + 1fr which makes the
+       poster too dominant. We override to a fixed narrow poster column. ── */
+    #api-detail .fdf-result-page {
+      margin-top: 0;
+      border-radius: 10px;
+    }
+    #api-detail .fdf-result-inner {
+      grid-template-columns: 180px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    #api-detail .fdf-result-poster img {
+      width: 100%;
+      border-radius: 8px;
+      border: 2px solid #0077ff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.6);
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── Streaming providers: row wrap, not column stack ── */
+    #api-detail .fdf-providers {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    #api-detail .fdf-provider {
+      flex-direction: column;
+      align-items: center;
+      min-width: 74px;
+      max-width: 90px;
+      text-align: center;
+      padding: 10px 10px 8px;
+    }
+    #api-detail .fdf-provider-logo img {
+      width: 40px; height: 40px;
+      object-fit: contain; border-radius: 8px;
+    }
+    #api-detail .fdf-provider span {
+      font-size: .72rem; margin-top: 5px; line-height: 1.3;
+    }
+    #api-detail .fdf-provider small {
+      font-size: .65rem;
+    }
+
+    /* ── Responsive detail panel ── */
+    @media (max-width: 640px) {
+      #api-detail .fdf-result-inner {
+        grid-template-columns: 1fr;
+      }
+      #api-detail .fdf-result-poster img {
+        max-width: 160px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+
+  <script>
+    const TOKEN   = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5OWZjNTFkZTQyYTBkZTQxODIyZGYwZmNiMTdlNmU0MyIsIm5iZiI6MTc3NzM3NzI1OS43MzEsInN1YiI6IjY5ZjA5ZmViZWVlYTBkY2I1ZmUzNmE3ZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.qE3E6JRcj0B2i6SrYS0SnYP0wTXfLaG3Rcl6ao0GVbc";
+    const HEADERS = { "Authorization": `Bearer ${TOKEN}` };
+    const IMG     = "https://image.tmdb.org/t/p/";
+
+    let allResults    = [];
+    let currentFilter = "all";
+
+    // Enter key
+    document.getElementById("q").addEventListener("keydown", e => {
+      if (e.key === "Enter") doSearch();
+    });
+
+    function setFilter(btn, f) {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = f;
+      renderGrid(allResults);
+    }
+
+    function setStatus(html) {
+      document.getElementById("api-status").innerHTML =
+        html ? `<p class="api-status-text">${html}</p>` : "";
+    }
+
+    // ── Search ────────────────────────────────────────────────────────────
+    async function doSearch() {
+      const q = document.getElementById("q").value.trim();
+      if (!q) return;
+
+      setStatus(`<span class="api-spinner"></span>Søger…`);
+      document.getElementById("api-grid").innerHTML   = "";
+      document.getElementById("api-detail").innerHTML = "";
+      allResults = [];
+
+      try {
+        const url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(q)}&language=da-DK&page=1`;
+        const res  = await fetch(url, { headers: HEADERS });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        allResults = (data.results || []).filter(r =>
+          r.media_type === "movie" || r.media_type === "tv"
+        );
+
+        if (!allResults.length) {
+          setStatus("");
+          document.getElementById("api-grid").innerHTML =
+            `<div class="api-empty"><span class="big">🎬</span><p>Ingen resultater for "<strong>${_x(q)}</strong>"</p></div>`;
+          return;
+        }
+
+        setStatus(`${allResults.length} resultater`);
+        renderGrid(allResults);
+
+      } catch(e) {
+        setStatus(`<span style="color:#ff6b6b">Fejl: ${_x(e.message)}</span>`);
+      }
+    }
+
+    // ── Grid ──────────────────────────────────────────────────────────────
+    function renderGrid(items) {
+      const grid     = document.getElementById("api-grid");
+      const filtered = currentFilter === "all"
+        ? items
+        : items.filter(r => r.media_type === currentFilter);
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="api-empty"><span class="big">🎭</span>
+          <p>Ingen ${currentFilter === "movie" ? "film" : "serier"} i disse resultater.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = `<div class="api-card-grid">
+        ${filtered.map((item, i) => {
+          const title   = _x(item.title || item.name || "Ukendt");
+          const year    = (item.release_date || item.first_air_date || "").slice(0, 4);
+          const poster  = item.poster_path
+            ? `<img src="${IMG}w342${item.poster_path}" alt="${title}" loading="lazy">`
+            : `<div class="api-card-no-poster">🎬</div>`;
+          const typeLbl = item.media_type === "movie" ? "Film" : "Serie";
+          const typeCls = item.media_type === "movie" ? "type-movie" : "type-tv";
+          return `
+            <div class="api-card" style="animation-delay:${i * 0.04}s"
+                 onclick="openDetail(${item.id},'${item.media_type}')">
+              ${poster}
+              <div class="api-card-body">
+                <div class="api-card-title" title="${title}">${title}</div>
+                <div class="api-card-meta">
+                  <span class="api-card-year">${year}</span>
+                  <span class="api-card-type ${typeCls}">${typeLbl}</span>
+                </div>
+              </div>
+            </div>`;
+        }).join("")}
+      </div>`;
+    }
+
+    // ── Detail panel (uses fdf-result-page from api-ui.css) ───────────────
+    async function openDetail(id, type) {
+      const detailBox = document.getElementById("api-detail");
+      detailBox.innerHTML = `<p class="api-status-text"><span class="api-spinner"></span>Henter detaljer…</p>`;
+      detailBox.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      try {
+        const [detRes, provRes] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/${type}/${id}?language=da-DK`, { headers: HEADERS }),
+          fetch(`https://api.themoviedb.org/3/${type}/${id}/watch/providers?watch_region=DK`, { headers: HEADERS })
+        ]);
+        const detail  = await detRes.json();
+        const provData = await provRes.json();
+        const dk = provData?.results?.DK;
+
+        const title    = detail.title || detail.name  || "Ukendt";
+        const tagline  = detail.tagline || "";
+        const overview = detail.overview || "Ingen beskrivelse tilgængelig.";
+        const year     = (detail.release_date || detail.first_air_date || "").slice(0, 4);
+        const rating   = detail.vote_average ? detail.vote_average.toFixed(1) : "–";
+        const votes    = detail.vote_count ? detail.vote_count.toLocaleString("da-DK") : "–";
+        const runtime  = detail.runtime
+          ? `${detail.runtime} min`
+          : (detail.episode_run_time?.[0] ? `${detail.episode_run_time[0]} min/ep` : "–");
+        const genres   = (detail.genres || []).map(g => `<span class="fdf-genre">${_x(g.name)}</span>`).join("");
+        const typeLabel = type === "movie" ? "Film" : "Serie";
+
+        const filled = Math.round(parseFloat(rating) / 2);
+        const stars  = "★".repeat(filled) + "☆".repeat(5 - filled);
+
+        const posterHtml = detail.poster_path
+          ? `<img src="${IMG}w300${detail.poster_path}" alt="${_x(title)}">`
+          : `<div style="width:100%;aspect-ratio:2/3;background:#0b3252;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:4rem;">🎬</div>`;
+
+        // Streaming providers
+        let streamHtml = "";
+        if (dk) {
+          const sections = [
+            { key: "flatrate", label: "🎬 Se på" },
+            { key: "rent",     label: "🛒 Lej" },
+            { key: "buy",      label: "💳 Køb" },
+          ];
+          const parts = sections.map(s => {
+            const list = dk[s.key] || [];
+            if (!list.length) return "";
+            const pills = list.map(p => {
+              const logo = p.logo_path
+                ? `<img src="${IMG}w45${p.logo_path}" alt="${_x(p.provider_name)}">`
+                : `<span class="fdf-provider-initials">${_x(p.provider_name.slice(0,2))}</span>`;
+              return `<div class="fdf-provider"><div class="fdf-provider-logo">${logo}</div><span>${_x(p.provider_name)}</span></div>`;
+            }).join("");
+            return `<p class="fdf-stream-label">${s.label}</p><div class="fdf-providers">${pills}</div>`;
+          }).join("");
+
+          streamHtml = parts || `<div class="fdf-no-stream"><p>Ikke tilgængelig til streaming i Danmark.</p></div>`;
+          if (dk.link) streamHtml += `<a class="fdf-jw-link" href="${_x(dk.link)}" target="_blank" rel="noopener">Se alle muligheder på JustWatch →</a>`;
+        } else {
+          streamHtml = `<div class="fdf-no-stream"><p>Ingen streaming-data for Danmark.</p></div>`;
+        }
+
+        detailBox.innerHTML = `
+          <div class="fdf-result-page">
+            <button class="fdf-close-btn" onclick="document.getElementById('api-detail').innerHTML=''">✕ Luk</button>
+            <div class="fdf-result-inner">
+              <div class="fdf-result-poster">${posterHtml}
+                <div class="fdf-badges" style="margin-top:10px">
+                  <span class="fdf-badge">${_x(typeLabel)}</span>
+                  <span class="fdf-badge">${_x(year)}</span>
+                  <span class="fdf-badge fdf-badge-rating">${stars} ${_x(rating)}</span>
+                </div>
+                <p style="color:#bcbcbc;font-size:.75rem;margin-top:6px;text-align:center">${_x(votes)} stemmer</p>
+              </div>
+              <div>
+                <h2 class="fdf-result-title">${_x(title)}</h2>
+                ${tagline ? `<p style="font-style:italic;color:#bcbcbc;font-size:.9rem;margin-bottom:12px;">"${_x(tagline)}"</p>` : ""}
+                ${genres  ? `<div class="fdf-genres" style="margin-bottom:14px">${genres}</div>` : ""}
+                <p style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#bcbcbc;margin-bottom:3px">Varighed</p>
+                <p style="font-size:.92rem;margin-bottom:16px">${_x(runtime)}</p>
+                <p class="fdf-overview">${_x(overview)}</p>
+                <div class="fdf-streaming-wrapper">${streamHtml}</div>
+              </div>
+            </div>
+          </div>`;
+
+      } catch(e) {
+        detailBox.innerHTML = `<p class="api-status-text" style="color:#ff6b6b">Fejl: ${_x(e.message)}</p>`;
+      }
+    }
+
+    function _x(s) {
+      return String(s ?? "")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+  </script>
+
+</body>
+</html>
