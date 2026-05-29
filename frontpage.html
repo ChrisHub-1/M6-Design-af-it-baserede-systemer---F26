@@ -45,23 +45,23 @@
 
         <h2 class="featured-title">Udvalgte:</h2>
         <div class="featured-films">
-            <div class="film-slot">
+            <div class="film-slot" onclick="openFilmModal('FilmImages/FearAndLoathingInLosWegas.jpg', 'Fear And Loathing In Los Vegas')">
                 <div class="film-poster" style="background-image: url('FilmImages/FearAndLoathingInLosWegas.jpg');"></div>
                 <p>Fear And Loathing In Los Vegas</p>
             </div>
-            <div class="film-slot">
+            <div class="film-slot" onclick="openFilmModal('FilmImages/BarbieInTheNutcracker.jpg', 'Barbie In The Nutcracker')">
                 <div class="film-poster" style="background-image: url('FilmImages/BarbieInTheNutcracker.jpg');"></div>
                 <p>Barbie In The Nutcracker</p>
             </div>
-            <div class="film-slot">
+            <div class="film-slot" onclick="openFilmModal('FilmImages/TexasChainsawMassacre.jpg', 'Texas Chainsaw Massacre')">
                 <div class="film-poster" style="background-image: url('FilmImages/TexasChainsawMassacre.jpg');"></div>
                 <p>Texas Chainsaw Massacre</p>
             </div>
-            <div class="film-slot">
+            <div class="film-slot" onclick="openFilmModal('FilmImages/MadameWeb.jpg', 'Madame Web')">
                 <div class="film-poster" style="background-image: url('FilmImages/MadameWeb.jpg');"></div>
                 <p>Madame Web</p>
             </div>
-            <div class="film-slot">
+            <div class="film-slot" onclick="openFilmModal('FilmImages/Oliver&Company.jpg', 'Oliver & Company')">
                 <div class="film-poster" style="background-image: url('FilmImages/Oliver&Company.jpg');"></div>
                 <p>Oliver & Company</p>
             </div>
@@ -71,6 +71,37 @@
         <div class="ad-placeholder-large" style="margin: 40px auto; max-width: 800px; padding: 0 20px;">📢 Annonce</div>
 
     </body>
+
+    <!-- Film Detail Modal -->
+    <div id="filmModal" class="film-modal-overlay" onclick="closeFilmModal(event)">
+        <div class="film-modal" onclick="event.stopPropagation()">
+            <!-- Close Button -->
+            <button class="modal-close-btn" onclick="closeFilmModal()">&times;</button>
+            
+            <!-- Film Header Image -->
+            <div class="modal-header-image" id="modalFilmImage"></div>
+            
+            <!-- Film Details -->
+            <div class="modal-content">
+                <h2 id="modalTitle"></h2>
+                
+                <div class="film-details">
+                    <p><strong>Titel;</strong> <span id="modalFilmTitle"></span></p>
+                    <p><strong>Beskrivelse;</strong> <span id="modalDescription"></span></p>
+                    <p><strong>Skuespillere;</strong> <span id="modalActors"></span></p>
+                    <p><strong>Direktør;</strong> <span id="modalDirector"></span></p>
+                    <p><strong>Filmstudie;</strong> <span id="modalStudio"></span></p>
+                    <p><strong>Aldersgrænse;</strong> <span id="modalAgeRating"></span></p>
+                    <p><strong>Streamingtjeneste;</strong> <span id="modalStreamingService"></span></p>
+                </div>
+                
+                <!-- Add to My Films Button -->
+                <div class="modal-actions">
+                    <button class="add-button" onclick="addToMyFilms()">+ Tilføj til Min Side</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Cookie Consent Modal -->
     <div id="cookieConsent" class="cookie-consent-overlay">
@@ -283,16 +314,124 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 600px) {
-            .cookie-consent-modal {
-                border-radius: 12px;
-                margin: 20px;
-                max-width: none;
-            }
+        /* Film Modal Styles */
+        .film-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .cookie-actions {
-                flex-direction: column;
-            }
+        .film-modal-overlay.active {
+            display: flex;
+        }
+
+        .film-modal {
+            background: var(--card-bg);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .modal-close-btn:hover {
+            opacity: 1;
+        }
+
+        .modal-header-image {
+            width: 100%;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-content {
+            padding: 30px;
+            color: var(--text-color);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-size: 1.8rem;
+        }
+
+        .film-details {
+            margin-bottom: 30px;
+        }
+
+        .film-details p {
+            margin: 12px 0;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .film-details p strong {
+            color: var(--accent-color);
+        }
+
+        .film-details p span {
+            color: var(--text-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .add-button {
+            background: var(--border-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .add-button:hover {
+            background: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        /* Make film slots clickable */
+        .film-slot {
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .film-slot:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 119, 255, 0.3);
         }
 
         /* Ad Placeholder Styles */
@@ -458,6 +597,84 @@
         
         // Also call immediately in case DOM is already loaded
         disableCurrentPageButton();
+    </script>
+
+    <script>
+        // Film Modal Functions
+        let currentFilm = {};
+
+        function openFilmModal(imagePath, title) {
+            currentFilm = {
+                image: imagePath,
+                title: title,
+                description: 'Placeholder beskrivelse - Opretter forbindelse til database...',
+                actors: 'Placeholder skuespillere - Opretter forbindelse til database...',
+                director: 'Placeholder direktør - Opretter forbindelse til database...',
+                studio: 'Placeholder filmstudie - Opretter forbindelse til database...',
+                ageRating: 'Placeholder aldersgrænse - Opretter forbindelse til database...',
+                streamingService: 'Placeholder streamingtjeneste - Opretter forbindelse til database...'
+            };
+
+            // Set modal content
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalFilmImage').style.backgroundImage = `url('${imagePath}')`;
+            document.getElementById('modalFilmTitle').textContent = currentFilm.title;
+            document.getElementById('modalDescription').textContent = currentFilm.description;
+            document.getElementById('modalActors').textContent = currentFilm.actors;
+            document.getElementById('modalDirector').textContent = currentFilm.director;
+            document.getElementById('modalStudio').textContent = currentFilm.studio;
+            document.getElementById('modalAgeRating').textContent = currentFilm.ageRating;
+            document.getElementById('modalStreamingService').textContent = currentFilm.streamingService;
+
+            // Show modal
+            document.getElementById('filmModal').classList.add('active');
+        }
+
+        function closeFilmModal(event) {
+            // Close if clicking outside the modal or on close button
+            if (event === undefined || event.target === document.getElementById('filmModal')) {
+                document.getElementById('filmModal').classList.remove('active');
+                currentFilm = {};
+            }
+        }
+
+        function addToMyFilms() {
+            if (!currentFilm.title) return;
+
+            // Check if user is logged in
+            const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                alert('Du skal være logget ind for at tilføje film til Min Side. Klik på Login øverst.');
+                closeFilmModal();
+                return;
+            }
+
+            // Get existing saved films from localStorage
+            let savedFilms = JSON.parse(localStorage.getItem('myFilms')) || [];
+
+            // Check if film already exists
+            const filmExists = savedFilms.some(film => film.title === currentFilm.title);
+            
+            if (filmExists) {
+                alert('Denne film er allerede tilføjet til Min Side');
+                return;
+            }
+
+            // Add film to saved films
+            savedFilms.push(currentFilm);
+            localStorage.setItem('myFilms', JSON.stringify(savedFilms));
+
+            alert('Film tilføjet til Min Side!');
+            closeFilmModal();
+        }
+
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeFilmModal();
+            }
+        });
     </script>
 
     <footer>
