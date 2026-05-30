@@ -5,6 +5,8 @@ Dette projekt anvender en API forbindelse til at indsamle data om tilgængelige 
 Derudover anvendes en Firestore database til at håndtere user login.
 Mappen med FilmImages indeholder en række udvalgte film vi har anvendt i opsætningen af html siderne.
 
+Pretotype, uml diagrammer, roller, roadmap, retrospective, styringsværktøj og projekt beskrivelse fremgår i den afleverede eksamens dokument (PDF). Derudover er det også lagt ind som fil i dette repository, navngivet: 
+
 Værsgo at gennemgå vores repository, vi ses til eksamen!
 
 God dag!
